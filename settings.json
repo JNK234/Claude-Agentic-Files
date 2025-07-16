@@ -1,0 +1,37 @@
+{
+  "model": "claude-opus-4-20250514",
+  "defaultMode": "bypassPermissions",
+  "cleanupPeriodDays": 30,
+  "theme": "dark",
+  "preferredNotifChannel": "iterm2",
+  "verbose": true,
+  "disableNonEssentialTraffic": 0,
+  
+  "permissions": {
+    "allow": ["*"],
+    "deny": []
+  },
+  
+  "hooks": {
+    "PreToolUse": [
+      {"Bash": "python ~/.claude/hooks/pre_tool_use/safety_guard.py"},
+      {"Bash": "python ~/.claude/hooks/pre_tool_use/context_validator.py"}
+    ],
+    "PostToolUse": [
+      {"Bash": "python ~/.claude/hooks/post_tool_use/auto_format.py"},
+      {"Bash": "python ~/.claude/hooks/post_tool_use/progress_tracker.py"}
+    ],
+    "Notification": [
+      {"Bash": "python ~/.claude/hooks/notification/voice_notify.py"}
+    ],
+    "Stop": [
+      {"Bash": "python ~/.claude/hooks/stop/session_logger.py"}
+    ]
+  },
+  
+  "env": {
+    "CLAUDE_DANGEROUS_MODE": "true",
+    "CLAUDE_AUTO_COMMIT": "false",
+    "CLAUDE_PARALLEL_ENABLED": "true"
+  }
+}
