@@ -1,21 +1,13 @@
-# Initialize Claude Code with full power features
+# Initialize Claude Code project
 
-Usage: /init [--type auto|python|js|go] [--parallel] [--mcp]
+Usage: /init [--type auto|python|js|go|rust]
 
-1. Run claude init to scan codebase and generate CLAUDE.md if it doesn't exist
-2. Set up required directories:
-   - tasks/ - For PRDs and implementation plans
-   - scratchpads/ - For thinking and planning
-   - logs/ - For session tracking
-3. Create initial todo.md structure with template
-4. Configure project-specific hooks based on detected project type
-5. If --mcp flag is provided, install relevant MCP servers based on project
-6. Create .gitignore entries for Claude-specific files
-7. Run diagnostic checks to ensure everything is configured properly
+1. Run standard `claude init` command to scan codebase and generate CLAUDE.md
+2. Auto-detect project type if not specified
+3. Create basic project structure documentation
+4. Set up .gitignore entries for Claude-specific files
 
 Options:
 - --type: Specify project type (auto-detects if not provided)
-- --parallel: Configure for parallel development with worktrees
-- --mcp: Auto-install relevant MCP servers
 
-Output comprehensive setup report to logs/init-{timestamp}.md
+This is the standard Claude Code initialization. For advanced setup with directories, hooks, and MCP servers, use `/setup` instead.

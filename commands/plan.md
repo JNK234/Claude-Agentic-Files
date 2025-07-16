@@ -1,8 +1,9 @@
 # Generate comprehensive, actionable plans
 
-Usage: /plan ["feature description"] [--prd] [--tasks]
+Usage: /plan ["feature description"] [--prd] [--tasks] [--from-spec <spec-file>]
 
 1. Requirements analysis:
+   - If --from-spec provided: Load existing spec from tasks/ directory
    - Parse provided description or prompt for details
    - Identify functional requirements
    - Define non-functional requirements
@@ -49,4 +50,10 @@ Usage: /plan ["feature description"] [--prd] [--tasks]
    - Note technology choices
    - Record important constraints
 
+Options:
+- --prd: Generate full Product Requirements Document
+- --tasks: Auto-create GitHub issues for each task
+- --from-spec: Use existing spec file as requirements source (e.g., tasks/spec-feature-timestamp.md)
+
 Output: Plan saved to tasks/plan-{feature}-{timestamp}.md
+Note: When using --from-spec, plan will reference and build upon the specified spec document

@@ -37,8 +37,7 @@ echo -e "${YELLOW}Installing hooks...${NC}"
 cp -r hooks/pre_tool_use/* ~/.claude/hooks/pre_tool_use/
 cp -r hooks/post_tool_use/* ~/.claude/hooks/post_tool_use/
 cp -r hooks/notification/* ~/.claude/hooks/notification/
-# Create empty stop hook directory
-touch ~/.claude/hooks/stop/.gitkeep
+cp -r hooks/stop/* ~/.claude/hooks/stop/
 echo -e "${GREEN}✅ Hooks installed${NC}"
 
 # Make hook scripts executable

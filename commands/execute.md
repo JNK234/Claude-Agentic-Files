@@ -1,11 +1,12 @@
 # Task execution engine
 
-Usage: /execute [todo|plan|issues] [--batch N]
+Usage: /execute [todo|plan|issues|spec] [--batch N] [--spec <spec-file>]
 
 Modes:
 - todo: Work through items in todo.md
 - plan: Execute prompts from plan file
 - issues: Process GitHub issues
+- spec: Execute tasks derived from spec file
 
 Process:
 
@@ -13,6 +14,8 @@ Process:
    - todo: Find next unchecked item in todo.md
    - plan: Read next unimplemented prompt from plan file
    - issues: Fetch open issues and select based on labels/priority
+   - spec: Parse spec file and create tasks from implementation roadmap
+   - If --spec provided: Use specified spec file to guide execution
 
 2. If --batch N provided:
    - Select up to N parallelizable tasks
@@ -47,4 +50,9 @@ Process:
    - Update main todo.md
    - Generate summary report
 
+Options:
+- --batch N: Handle N items in parallel
+- --spec: Use existing spec file to guide execution and validate against requirements
+
 Output: Execution summary with completed tasks and any blockers
+Note: When using spec mode or --spec flag, all tasks will be validated against spec requirements

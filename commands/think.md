@@ -1,11 +1,12 @@
 # Activate maximum cognitive capacity for complex problems
 
-Usage: /think [problem] [--harder|--ultra]
+Usage: /think [problem] [--harder|--ultra] [--spec <spec-file>]
 
 1. Enter enhanced reasoning mode based on modifier:
    - Default: Standard deep thinking
    - --harder: Extended analysis (2x depth)
    - --ultra: Maximum depth (5x, token intensive)
+   - If --spec provided: Load spec file for context and constraints
 
 2. Analyze the problem from multiple perspectives:
    - Technical feasibility
@@ -13,6 +14,7 @@ Usage: /think [problem] [--harder|--ultra]
    - Performance considerations
    - Security aspects
    - Maintainability factors
+   - If --spec provided: Alignment with specification requirements
 
 3. Research existing codebase for:
    - Similar patterns or solutions
@@ -31,4 +33,10 @@ Usage: /think [problem] [--harder|--ultra]
 
 7. If solution involves multiple components, automatically create todo items
 
+Options:
+- --harder: Extended analysis (2x depth)
+- --ultra: Maximum depth (5x, token intensive)
+- --spec: Use existing spec file for context and constraints (e.g., tasks/spec-feature-timestamp.md)
+
 Remember: Take your time, think step by step, and consider edge cases.
+Note: When using --spec, thinking will be guided by and validated against specification requirements
