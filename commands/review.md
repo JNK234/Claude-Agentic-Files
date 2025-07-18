@@ -3,50 +3,52 @@
 Usage: /review [focus] [--fix] [--create-issues] [--spec <spec-file>]
 
 Focus areas:
-- security: OWASP top 10, credential leaks, injection vulnerabilities
-- performance: Bottlenecks, N+1 queries, memory leaks, optimization opportunities
-- quality: Code patterns, maintainability, DRY violations, complexity
-- tests: Coverage gaps, edge cases, test quality, assertions
-- spec: Validate implementation against specification requirements
-- all: Complete analysis across all dimensions
+- security: OWASP top 10, credential leaks, injection vulnerabilities (Security persona)
+- performance: Bottlenecks, N+1 queries, memory leaks, optimization opportunities (Performance persona)
+- quality: Code patterns, maintainability, DRY violations, complexity (Analyzer persona)
+- tests: Coverage gaps, edge cases, test quality, assertions (QA persona)
+- spec: Validate implementation against specification requirements (Architect persona)
+- all: Complete analysis across all dimensions (Multi-persona coordination)
 
 Process:
 
 1. Scan codebase based on selected focus:
    - Use appropriate analysis patterns
+   - Activate appropriate personas for specialized analysis
+   - Use MCP servers for enhanced analysis (Sequential for deep reasoning)
    - Check against best practices
-   - Identify anti-patterns
-   - If --spec provided: Load spec file and validate implementation against requirements
+   - If --spec provided: Load spec file and validate implementation
 
-2. Security review specifics:
+2. Security review specifics (Security persona):
    - SQL injection vulnerabilities
    - XSS possibilities
    - Authentication/authorization issues
    - Sensitive data exposure
    - Dependency vulnerabilities
 
-3. Performance review specifics:
+3. Performance review specifics (Performance persona):
    - Database query optimization
    - Caching opportunities
    - Algorithm complexity
    - Resource usage patterns
    - Async/parallel possibilities
 
-4. Quality review specifics:
+4. Quality review specifics (Analyzer persona):
    - Code duplication
    - Complex methods (cyclomatic complexity > 10)
    - Long parameter lists
    - God classes/modules
    - Naming conventions
 
-5. Test review specifics:
+5. Test review specifics (QA persona):
    - Uncovered code paths
    - Missing edge cases
    - Test readability
    - Assertion quality
    - Mock vs real data usage
+   - E2E test coverage with Playwright MCP
 
-6. Spec validation specifics (when focus=spec or --spec provided):
+6. Spec validation specifics (Architect persona):
    - Verify all requirements are implemented
    - Check acceptance criteria compliance
    - Validate technical specifications
@@ -60,7 +62,7 @@ Process:
    - Suggested fixes
 
 8. If --fix flag provided:
-   - Attempt automatic fixes for issues
+   - Attempt automatic fixes for identified issues
    - Create separate commits for each fix type
    - Run tests after each fix
    - Revert if tests fail
@@ -76,7 +78,11 @@ Process:
 Options:
 - --fix: Attempt automatic fixes for identified issues
 - --create-issues: Create GitHub issues for findings
-- --spec: Validate implementation against specification requirements (e.g., tasks/spec-feature-timestamp.md)
+- --spec: Validate implementation against specification requirements
+- --personas: Override automatic persona selection for specialized reviews
+- --mcp: Specify MCP servers for enhanced analysis capabilities
+- --severity: Filter findings by severity level (critical|high|medium|low)
+- --parallel: Run parallel analysis for large codebases
 
 Output: Review report to logs/review-{focus}-{timestamp}.md
-Note: When using --spec, review will validate implementation compliance with specification requirements
+Note: When using --spec, review will validate implementation compliance with specification requirements using MCP integration and multi-persona coordination.

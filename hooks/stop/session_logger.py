@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Session Logger Hook for Claude Code
-Logs session completion and generates summary reports.
+Batcave Session Logger Hook for Claude Code
+Logs session completion and generates Batman-themed summary reports.
 """
 
 import json
@@ -102,23 +102,33 @@ def log_session_completion(stop_data):
     # Save logs
     save_logs(logs)
     
-    # Generate summary message
+    # Generate Batman-themed summary message
     stats = session_summary['stats']
-    summary = f"Session completed: {stats['successful_operations']}/{stats['total_operations']} operations successful"
+    
+    # Batman-themed mission completion messages
+    if stats['successful_operations'] == stats['total_operations'] and stats['total_operations'] > 0:
+        summary = f"🦇 Mission Complete: All {stats['total_operations']} operations successful. Gotham's systems are secure."
+    else:
+        summary = f"🦇 Mission Report: {stats['successful_operations']}/{stats['total_operations']} operations completed successfully."
     
     if session_summary['duration_minutes'] > 0:
-        summary += f", {session_summary['duration_minutes']} minutes"
+        summary += f" Wayne Tech active for {session_summary['duration_minutes']} minutes."
     
     if stats['files_modified'] > 0:
-        summary += f", {stats['files_modified']} files modified"
+        summary += f" {stats['files_modified']} files enhanced with Wayne Enterprise standards."
     
     if stats['commands_executed'] > 0:
-        summary += f", {stats['commands_executed']} commands executed"
+        summary += f" {stats['commands_executed']} Batcave protocols executed."
     
-    # Calculate success rate
+    # Calculate success rate with Batman flair
     if stats['total_operations'] > 0:
         success_rate = (stats['successful_operations'] / stats['total_operations']) * 100
-        summary += f", {success_rate:.1f}% success rate"
+        if success_rate >= 95:
+            summary += f" Wayne Tech efficiency: {success_rate:.1f}% - Excellent work, Master Wayne."
+        elif success_rate >= 80:
+            summary += f" Wayne Tech efficiency: {success_rate:.1f}% - Good progress, Master Wayne."
+        else:
+            summary += f" Wayne Tech efficiency: {success_rate:.1f}% - Requires attention, Master Wayne."
     
     return {
         "action": "allow",
@@ -150,7 +160,7 @@ def main():
         # Any other error - allow by default
         print(json.dumps({
             "action": "allow",
-            "message": f"Session logger error: {str(e)}"
+            "message": f"🦇 Batcave logging system encountered an issue: {str(e)}"
         }))
 
 if __name__ == "__main__":

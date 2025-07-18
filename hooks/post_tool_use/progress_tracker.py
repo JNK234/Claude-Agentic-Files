@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Progress Tracker Hook for Claude Code
-Tracks progress of operations and provides status updates.
+Batcave Progress Tracker Hook for Claude Code
+Tracks progress of operations and provides Batman-themed status updates.
 """
 
 import json
@@ -104,15 +104,20 @@ def track_operation(tool_data):
     # Save progress
     save_progress(progress)
     
-    # Generate progress message
+    # Generate Batman-themed progress message
     stats = session_data['stats']
-    message = f"Session progress: {stats['successful_operations']}/{stats['total_operations']} operations successful"
+    
+    # Batman-themed progress messages
+    if stats['successful_operations'] == stats['total_operations']:
+        message = f"🦇 Batcave Report: All {stats['total_operations']} operations successful. Gotham remains secure."
+    else:
+        message = f"🦇 Batcave Report: {stats['successful_operations']}/{stats['total_operations']} operations successful. Continuing mission."
     
     if stats['files_modified'] > 0:
-        message += f", {stats['files_modified']} files modified"
+        message += f" Wayne Tech modified {stats['files_modified']} files."
     
     if stats['commands_executed'] > 0:
-        message += f", {stats['commands_executed']} commands executed"
+        message += f" Executed {stats['commands_executed']} Batcave protocols."
     
     return {
         "action": "allow",
@@ -144,7 +149,7 @@ def main():
         # Any other error - allow by default
         print(json.dumps({
             "action": "allow",
-            "message": f"Progress tracker error: {str(e)}"
+            "message": f"🦇 Batcave systems encountered an issue: {str(e)}"
         }))
 
 if __name__ == "__main__":

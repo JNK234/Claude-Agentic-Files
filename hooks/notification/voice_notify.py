@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Voice notifications for Claude Code using system TTS
+Batman-themed voice notifications for Claude Code using system TTS
+Provides Master Wayne with audio updates from the Batcave
 """
 
 import json
@@ -40,15 +41,21 @@ def main():
         
         message = notification.get("message", "")
         
-        # Add personality to messages
+        # Add Batman-themed personality to messages
         if "needs your input" in message.lower():
-            speak("Doctor Biz, I need your brilliant mind!")
+            speak("Master Wayne, the Batcave requires your attention.")
         elif "completed" in message.lower():
-            speak("Doctor Biz, mission accomplished!")
+            speak("Master Wayne, mission accomplished. Gotham is secure.")
         elif "error" in message.lower():
-            speak("Doctor Biz, we've hit a snag!")
+            speak("Master Wayne, we've encountered a situation in the field.")
+        elif "analyzing" in message.lower():
+            speak("Master Wayne, running diagnostics from the Batcave.")
+        elif "implementing" in message.lower():
+            speak("Master Wayne, deploying Wayne Tech protocols.")
+        elif "testing" in message.lower():
+            speak("Master Wayne, running security validation systems.")
         else:
-            speak(f"Doctor Biz, {message}")
+            speak(f"Master Wayne, {message}")
         
         # Always allow
         print(json.dumps({"action": "allow"}))
