@@ -1,0 +1,58 @@
+{
+  "description": "MCP Server Configuration for Claude Agnetic System",
+  "version": "1.0.0",
+  "servers": [
+    {
+      "name": "sequential-thinking",
+      "description": "Advanced sequential thinking and problem analysis",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "transport": "stdio",
+      "category": "reasoning"
+    },
+    {
+      "name": "puppeteer",
+      "description": "Web automation and browser control",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "transport": "stdio",
+      "category": "automation"
+    },
+    {
+      "name": "filesystem",
+      "description": "File system operations and management",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/jnk789/Developer"],
+      "transport": "stdio",
+      "category": "system",
+      "config": {
+        "allowed_directories": ["/Users/jnk789/Developer"]
+      }
+    },
+    {
+      "name": "context7",
+      "description": "Documentation and context retrieval",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "transport": "stdio",
+      "category": "documentation"
+    },
+    {
+      "name": "zen",
+      "description": "Advanced AI workflow tools and collaboration",
+      "command": "/Users/jnk789/Developer/MCPs/zen-mcp-server/.zen_venv/bin/python",
+      "args": ["/Users/jnk789/Developer/MCPs/zen-mcp-server/server.py"],
+      "transport": "stdio",
+      "category": "ai-workflows",
+      "config": {
+        "working_directory": "/Users/jnk789/Developer/MCPs/zen-mcp-server"
+      }
+    }
+  ],
+  "presets": {
+    "minimal": ["filesystem", "context7"],
+    "development": ["filesystem", "context7", "puppeteer"],
+    "full": ["sequential-thinking", "puppeteer", "filesystem", "context7", "zen"],
+    "ai-enhanced": ["sequential-thinking", "context7", "zen"]
+  }
+}

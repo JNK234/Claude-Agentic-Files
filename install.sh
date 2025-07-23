@@ -70,7 +70,7 @@ main() {
 check_dependencies() {
     echo -e "${GRAY}[INFO]${NC} Checking dependencies..."
     
-    local deps=("bash" "jq" "curl" "git" "python3")
+    local deps=("bash" "jq" "curl" "git" "python3" "claude" "npm")
     local missing=()
     
     for dep in "${deps[@]}"; do
@@ -81,7 +81,15 @@ check_dependencies() {
     
     if [[ ${#missing[@]} -gt 0 ]]; then
         echo -e "${YELLOW}[ERROR]${NC} Missing dependencies: ${missing[*]}"
-        echo "Please install the missing dependencies and try again."
+        echo "Please install the missing dependencies:"
+        for dep in "${missing[@]}"; do
+            case "$dep" in
+                "claude") echo "  - Install Claude Code: https://claude.ai/code" ;;
+                "jq") echo "  - Install jq: brew install jq (macOS) or apt-get install jq (Linux)" ;;
+                "npm") echo "  - Install Node.js/npm: https://nodejs.org/" ;;
+                *) echo "  - Install $dep" ;;
+            esac
+        done
         exit 1
     fi
     
@@ -138,34 +146,17 @@ install_core_system() {
         chmod +x "$CLAUDE_HOME/scripts/"*.sh
     fi
     
-    # Create default settings
+    # Create default settings for Claude Code
     cat > "$CLAUDE_HOME/settings.json" <<EOF
 {
-    "version": "$VERSION",
-    "theme": "batman",
-    "persona": {
-        "default": "master_wayne",
-        "auto_activation": true,
-        "aliases": ["Master Wayne", "Batman", "Bruce Wayne"]
-    },
-    "mcp": {
-        "enabled": true,
-        "auto_selection": true,
-        "servers": ["context7", "sequential", "magic", "playwright"]
-    },
-    "orchestration": {
-        "enabled": true,
-        "default_mode": "adaptive",
-        "max_parallel_stages": 3
-    },
-    "cache": {
-        "enabled": true,
-        "default_ttl": 3600,
-        "max_size_mb": 100
-    },
-    "notifications": {
-        "voice": true,
-        "batman_theme": true
+    "enableAllProjectMcpServers": true,
+    "enabledMcpjsonServers": ["context7", "sequential", "magic", "playwright"],
+    "includeCoAuthoredBy": true,
+    "cleanupPeriodDays": 30,
+    "permissions": {
+        "defaultMode": "bypassPermissions",
+        "allow": ["*"],
+        "deny": []
     }
 }
 EOF
@@ -176,22 +167,89 @@ EOF
 install_mcp_servers() {
     echo -e "${GRAY}[INFO]${NC} Installing MCP servers..."
     
-    # Copy MCP system files
-    cp -r "$REPO_DIR/mcp/"* "$CLAUDE_HOME/mcp/"
-    
-    # Setup MCP servers
-    if [[ -f "$REPO_DIR/setup/mcp.sh" ]]; then
-        source "$REPO_DIR/setup/mcp.sh"
-        setup_mcp_servers "$CLAUDE_HOME"
+    # Copy MCP system files if they exist
+    if [[ -d "$REPO_DIR/mcp" ]]; then
+        cp -r "$REPO_DIR/mcp/"* "$CLAUDE_HOME/mcp/"
     fi
     
-    # Install MCP servers
-    if [[ -f "$CLAUDE_HOME/mcp/install_servers.sh" ]]; then
-        cd "$CLAUDE_HOME/mcp"
-        ./install_servers.sh
+    # Copy MCP configuration file
+    if [[ -f "$REPO_DIR/mcp-servers-config.json" ]]; then
+        cp "$REPO_DIR/mcp-servers-config.json" "$CLAUDE_HOME/mcp/"
+        echo -e "${GRAY}[INFO]${NC} MCP configuration copied"
     fi
+    
+    # Setup MCP servers using the new configuration system
+    setup_mcp_servers_from_config
     
     echo -e "${GRAY}[INFO]${NC} MCP servers configured"
+}
+
+# New function to setup MCP servers from configuration
+setup_mcp_servers_from_config() {
+    local config_file="$REPO_DIR/mcp-servers-config.json"
+    
+    if [[ ! -f "$config_file" ]]; then
+        echo -e "${YELLOW}[WARN]${NC} MCP configuration file not found: $config_file"
+        return 0
+    fi
+    
+    echo -e "${GRAY}[INFO]${NC} Setting up MCP servers from configuration..."
+    
+    # Remove existing servers first
+    echo -e "${GRAY}[INFO]${NC} Removing existing MCP servers..."
+    local servers
+    if servers=$(claude mcp list --json 2>/dev/null); then
+        local server_names
+        server_names=$(echo "$servers" | jq -r '.[].name' 2>/dev/null || echo "")
+        
+        if [[ -n "$server_names" ]]; then
+            while IFS= read -r server_name; do
+                if [[ -n "$server_name" ]]; then
+                    claude mcp remove "$server_name" 2>/dev/null || true
+                fi
+            done <<< "$server_names"
+        fi
+    fi
+    
+    # Install servers from the 'full' preset
+    local preset_servers
+    preset_servers=$(jq -r '.presets.full[]?' "$config_file" 2>/dev/null)
+    
+    local success_count=0
+    local fail_count=0
+    
+    while IFS= read -r server_name; do
+        if [[ -n "$server_name" ]]; then
+            local server_config
+            server_config=$(jq -r --arg name "$server_name" '.servers[] | select(.name == $name)' "$config_file")
+            
+            if [[ -n "$server_config" && "$server_config" != "null" ]]; then
+                local command args transport description
+                command=$(echo "$server_config" | jq -r '.command')
+                args=$(echo "$server_config" | jq -r '.args[]' | tr '\n' ' ')
+                transport=$(echo "$server_config" | jq -r '.transport // "stdio"')
+                description=$(echo "$server_config" | jq -r '.description // "No description"')
+                
+                echo -e "${GRAY}[INFO]${NC} Adding $server_name: $description"
+                
+                local full_command="$command $args"
+                
+                if claude mcp add "$server_name" "$full_command" 2>/dev/null; then
+                    echo -e "${GRAY}[INFO]${NC}   ✓ Added: $server_name"
+                    ((success_count++))
+                else
+                    echo -e "${YELLOW}[WARN]${NC}   ✗ Failed to add: $server_name"
+                    ((fail_count++))
+                fi
+            fi
+        fi
+    done <<< "$preset_servers"
+    
+    echo -e "${GRAY}[INFO]${NC} MCP Server Installation Summary:"
+    echo -e "${GRAY}[INFO]${NC}   ✓ Successfully installed: $success_count servers"
+    if [[ $fail_count -gt 0 ]]; then
+        echo -e "${YELLOW}[WARN]${NC}   ✗ Failed to install: $fail_count servers"
+    fi
 }
 
 install_persona_system() {
@@ -329,11 +387,16 @@ run_installation_tests() {
     fi
     
     # Test MCP servers
-    if [[ -d "$CLAUDE_HOME/mcp/servers" ]]; then
-        echo -e "${GRAY}[INFO]${NC}   ✓ MCP servers configured"
+    if command -v claude &> /dev/null && claude mcp list &> /dev/null; then
+        local server_count
+        server_count=$(claude mcp list 2>/dev/null | grep -c "✓ Connected" 2>/dev/null || echo "0")
+        if [[ $server_count -gt 0 ]]; then
+            echo -e "${GRAY}[INFO]${NC}   ✓ MCP servers configured ($server_count active)"
+        else
+            echo -e "${YELLOW}[WARN]${NC}   ! No active MCP servers found"
+        fi
     else
-        echo -e "${YELLOW}[ERROR]${NC}   ✗ MCP servers missing"
-        return 1
+        echo -e "${YELLOW}[WARN]${NC}   ! Could not test MCP servers"
     fi
     
     # Test personas
@@ -378,6 +441,11 @@ show_completion_message() {
     echo -e "• ${YELLOW}claude /architect 'system design'${NC} - Architecture design"
     echo -e "• ${YELLOW}claude /ui 'component description'${NC} - UI component generation"
     echo -e "• ${YELLOW}claude /review security --fix${NC} - Security review with fixes"
+    echo
+    echo -e "${WHITE}MCP Management:${NC}"
+    echo -e "• ${YELLOW}./setup-mcp.sh preset full${NC} - Install all MCP servers"
+    echo -e "• ${YELLOW}./setup-mcp.sh status${NC} - Check MCP server status"
+    echo -e "• ${YELLOW}claude mcp list${NC} - List active MCP servers"
     echo
     echo -e "${YELLOW}🦇 Welcome to Wayne Enterprises. Let's protect Gotham's codebase!${NC}"
     echo -e "${GRAY}═══════════════════════════════════════${NC}"

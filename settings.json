@@ -3,6 +3,7 @@
   "cleanupPeriodDays": 30,
 
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": ["*"],
     "deny": []
   },

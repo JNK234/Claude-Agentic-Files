@@ -118,25 +118,16 @@ claude /test-e2e "User registration flow" --browsers all --record
 ### Key Configuration Options
 ```json
 {
-  "persona": {
-    "default": "master_wayne",
-    "auto_activation": true,
-    "aliases": ["Master Wayne", "Batman", "Bruce"]
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["context7", "sequential", "magic", "playwright"],
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30,
+  "permissions": {
+    "defaultMode": "allow"
   },
-  "mcp": {
-    "enabled": true,
-    "auto_selection": true,
-    "servers": ["context7", "sequential", "magic", "playwright"]
-  },
-  "orchestration": {
-    "enabled": true,
-    "default_mode": "adaptive",
-    "max_parallel_stages": 3
-  },
-  "theme": {
-    "batman_mode": true,
-    "voice_notifications": true,
-    "progress_indicators": "batman"
+  "hooks": {
+    "afterEdit": "./hooks/edit_notification.sh",
+    "beforeBash": "./hooks/bash_safety.sh"
   }
 }
 ```
