@@ -20,8 +20,8 @@ Process:
 2. If --batch N provided:
    - Select up to N parallelizable tasks
    - Ensure no dependency conflicts
-   - Create worktrees for each task
-   - Launch parallel execution
+   - Execute: ~/.claude/scripts/parallel.sh N
+   - Launch parallel execution using global worktree infrastructure
 
 3. For each task:
    - Create feature branch if needed

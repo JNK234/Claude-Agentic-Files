@@ -150,6 +150,6 @@ claude /implement "Design microservices architecture for payment processing" --c
 4. **Test Gate**: All tests passing with adequate coverage
 5. **Documentation Gate**: All features documented
 
-**Output**: Complete feature implementation with tests, documentation, and Wayne Tech approval rating.
+**Output**: Complete feature implementation with tests, documentation, and Wayne Tech approval rating (saved to project directory with logs in ./logs/implement-{timestamp}.md).
 
 **Note**: The system automatically selects the optimal combination of personas and MCP servers based on feature analysis, ensuring efficient and high-quality implementation while maintaining Wayne Enterprise standards.

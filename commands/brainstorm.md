@@ -13,8 +13,8 @@ Usage: /brainstorm [topic] [--interactive] [--specs] [--research]
 4. Research existing codebase for related patterns
 5. Generate comprehensive specifications based on findings
 6. Create actionable implementation plans
-7. Generate comprehensive specification document saved to tasks/spec-{topic}-{timestamp}.md
-8. Save session summary to logs/brainstorm-session-{timestamp}.md
+7. Generate comprehensive specification document saved to ./tasks/spec-{topic}-{timestamp}.md
+8. Save session summary to ./logs/brainstorm-session-{timestamp}.md
 
 Options:
 - --interactive: Enable guided Q&A mode (default)
@@ -29,12 +29,12 @@ Process:
 5. **Planning Phase**: Break down into actionable implementation steps
 
 Output:
-- tasks/spec-{topic}-{timestamp}.md - Complete specification including:
+- ./tasks/spec-{topic}-{timestamp}.md - Complete specification including:
   - Requirements analysis
   - Technical specifications
   - Implementation roadmap
   - Risk assessment
   - Success metrics
-- logs/brainstorm-session-{timestamp}.md - Session summary and decisions
+- ./logs/brainstorm-session-{timestamp}.md - Session summary and decisions
 
-This command is designed for collaborative specification creation through interactive dialogue, generating a single comprehensive specification document in the tasks/ directory.
+This command is designed for collaborative specification creation through interactive dialogue, generating a single comprehensive specification document in the project's tasks/ directory.

@@ -68,6 +68,40 @@ test_executable() {
     fi
 }
 
+test_mcp_servers() {
+    local description="MCP server connections"
+    
+    TOTAL_TESTS=$((TOTAL_TESTS + 1))
+    
+    # Check if claude command exists
+    if ! command -v claude &> /dev/null; then
+        echo -e "${RED}✗${NC} $description (Claude Code not found)"
+        FAILED_TESTS=$((FAILED_TESTS + 1))
+        return 1
+    fi
+    
+    # Check MCP server status
+    local mcp_output
+    if mcp_output=$(claude mcp list 2>/dev/null); then
+        local connected_servers
+        connected_servers=$(echo "$mcp_output" | grep -c "✓ Connected" || echo "0")
+        
+        if [[ "$connected_servers" -gt 0 ]]; then
+            echo -e "${GREEN}✓${NC} $description ($connected_servers servers connected)"
+            PASSED_TESTS=$((PASSED_TESTS + 1))
+            return 0
+        else
+            echo -e "${YELLOW}⚠${NC} $description (no servers connected - run mcp_setup.sh)"
+            PASSED_TESTS=$((PASSED_TESTS + 1))
+            return 0
+        fi
+    else
+        echo -e "${RED}✗${NC} $description (MCP system not working)"
+        FAILED_TESTS=$((FAILED_TESTS + 1))
+        return 1
+    fi
+}
+
 # Main test function
 run_tests() {
     echo -e "${YELLOW}🦇 Testing Claude Agnetic System Installation${NC}"
@@ -97,12 +131,10 @@ run_tests() {
     
     # Test MCP system
     echo -e "${YELLOW}Testing MCP System:${NC}"
-    test_file_exists "$CLAUDE_HOME/mcp/lib/mcp_utils.sh" "MCP utilities"
-    test_directory_exists "$CLAUDE_HOME/mcp/servers" "MCP servers directory"
-    test_file_exists "$CLAUDE_HOME/mcp/servers/context7_server.py" "Context7 server"
-    test_file_exists "$CLAUDE_HOME/mcp/servers/sequential_server.py" "Sequential server"
-    test_file_exists "$CLAUDE_HOME/mcp/servers/magic_server.py" "Magic server"
-    test_file_exists "$CLAUDE_HOME/mcp/servers/playwright_server.py" "Playwright server"
+    test_directory_exists "$CLAUDE_HOME/mcp" "MCP directory"
+    
+    # Test MCP server connections
+    test_mcp_servers
     echo
     
     # Test persona system

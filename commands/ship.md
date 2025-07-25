@@ -48,7 +48,7 @@ Usage: /ship [task|issue|"description"] [--parallel] [--spec <spec-file>] [--val
 
 9. If --parallel specified:
    - Identify sub-tasks that can be parallelized
-   - Create worktrees for each
+   - Execute: ~/.claude/scripts/worktree.sh {task-id} for each sub-task
    - Launch parallel Claude instances with persona specialization
    - Orchestrated wave execution for complex features
 
