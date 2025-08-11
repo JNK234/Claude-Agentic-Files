@@ -1,155 +1,190 @@
-# Intelligent feature implementation
+# Implement Command
 
-Advanced feature implementation with automatic persona selection and MCP integration.
+Execute implementation plans using Test-Driven Development with automated testing, commits, and progress tracking.
 
-Usage: /implement [feature_description] [--complexity <level>] [--personas <list>] [--mcp <servers>]
+## Task
+Transform a plan file into working code using TDD methodology, with automatic GitHub repository setup, test generation, implementation, validation, and progress tracking.
 
-## Wayne Tech Implementation Protocol
+## Process
 
-### 1. **Feature Analysis & Classification**
-- Analyze feature requirements using Sequential MCP
-- Detect implementation complexity (low|medium|high|ultra)
-- Classify feature type (ui|api|full-stack|infrastructure)
-- Determine required personas and MCP servers
-- Generate Wayne Tech project classification
+### Phase 1: Setup & Initialization
+1. **Parse Plan File**
+   - Read plan file from $ARGUMENTS
+   - Use `Read` to load the plan document
+   - Extract task list and tech stack decisions
+   - Identify dependencies and task order
+   - Create implementation roadmap
 
-### 2. **Intelligent Persona Activation**
-- **UI Features**: Frontend + QA personas, Magic MCP
-- **API Features**: Backend + Security personas, Sequential MCP
-- **Full-Stack Features**: Architect + Frontend + Backend personas, all MCPs
-- **Infrastructure**: DevOps + Security personas, Sequential + Context7 MCPs
-- **Complex Features**: Multi-persona coordination with Wave orchestration
+2. **Repository Setup**
+   - Use `Bash` to check if git repository exists
+   - If not, use `mcp__github__create_repository` to:
+     - Create new GitHub repository
+     - Set up initial structure
+     - Add README with project overview
+   - Use `Bash` to:
+     - Initialize git if needed
+     - Set remote origin
+     - Create initial commit
 
-### 3. **MCP Server Integration**
-- **Context7**: Documentation and best practices lookup
-- **Sequential**: Deep analysis and step-by-step reasoning
-- **Magic**: UI component generation and design
-- **Playwright**: Test automation and E2E coverage
+3. **Task Management Setup**
+   - Use `TodoWrite` to create task list from plan
+   - Mark all tasks as "pending"
+   - Set first task as "in_progress"
+   - Track: Task name, Test status, Implementation status, Commit status
 
-### 4. **Implementation Workflow**
-1. **Requirements Analysis** (Analyzer persona)
-   - Break down feature into actionable tasks
-   - Identify dependencies and constraints
-   - Create acceptance criteria
+### Phase 2: TDD Implementation Loop (Per Task)
 
-2. **Architecture Design** (Architect persona)
-   - Design system architecture if needed
-   - Define component interfaces
-   - Plan data flow and state management
+4. **Task Analysis**
+   - Read current task from plan
+   - Use `mcp__zen__analyze` to:
+     - Understand requirements deeply
+     - Identify edge cases
+     - Define success criteria
+   - Determine:
+     - Input/output specifications
+     - Error handling requirements
+     - Performance constraints
 
-3. **Core Implementation** (Appropriate dev personas)
-   - Implement core functionality
-   - Follow Wayne Tech coding standards
-   - Apply security best practices
+5. **Test Generation (RED Phase)**
+   - Use `mcp__zen__testgen` with:
+     - Task requirements as input
+     - Tech stack from plan
+     - Existing test patterns from codebase
+   - Generate comprehensive test cases:
+     - Happy path tests
+     - Edge case tests
+     - Error handling tests
+     - Integration tests if needed
+   - Use `Write` or `MultiEdit` to create test files
+   - Use `Bash` to run tests and confirm they FAIL
+   - If tests don't fail, revise until they do
 
-4. **Test Development** (QA persona)
-   - Create comprehensive test suite
-   - Unit tests for all components
-   - Integration tests for workflows
-   - E2E tests with Playwright MCP
+6. **Implementation (GREEN Phase)**
+   - Use `mcp__context7__get-library-docs` for:
+     - Framework documentation
+     - Best practices
+     - Code examples
+   - Use `Write`, `Edit`, or `MultiEdit` to:
+     - Implement minimum code to pass tests
+     - Follow tech stack decisions from plan
+     - Match existing code patterns
+   - Use `Bash` to run tests repeatedly:
+     - Fix compilation errors
+     - Address test failures
+     - Continue until ALL tests pass
 
-5. **Feature Integration** (DevOps persona)
-   - Integrate with existing systems
-   - Update configuration and deployment
-   - Verify compatibility
+7. **Refactoring (REFACTOR Phase)**
+   - Once tests pass, use `mcp__zen__refactor` to:
+     - Identify code smells
+     - Suggest improvements
+     - Optimize performance
+   - Apply refactoring suggestions while ensuring:
+     - Tests still pass after each change
+     - Code follows project patterns
+     - No over-engineering
 
-6. **Documentation & Polish** (Scribe persona)
-   - Create user documentation
-   - Update technical documentation
-   - Code comments and examples
+8. **Validation & Quality Checks**
+   - Use `Bash` to run:
+     - Linting: `npm run lint` or equivalent
+     - Type checking: `npm run typecheck` or equivalent
+     - Test coverage: `npm run coverage`
+   - Use `mcp__zen__codereview` for:
+     - Code quality assessment
+     - Security check
+     - Best practices validation
+   - Fix any issues found
 
-### 5. **Quality Assurance Protocol**
-- Automated testing with full coverage
-- Security validation and vulnerability scanning
-- Performance benchmarking
-- Code quality metrics and standards compliance
-- Wayne Tech approval process
+9. **Commit & Documentation**
+   - Use `Bash` for git operations:
+     - Stage test files: `git add tests/`
+     - Commit tests: `git commit -m "test: add tests for [feature]"`
+     - Stage implementation: `git add src/`
+     - Commit implementation: `git commit -m "feat: implement [feature]"`
+   - Push to GitHub: `git push origin main`
 
-### 6. **Progress Tracking & Reporting**
-- Real-time progress indicators with Batman themes
-- Comprehensive implementation log
-- Persona performance metrics
-- MCP server utilization statistics
-- Mission completion status
+10. **Progress Update**
+    - Use `Edit` to update plan file:
+      - Mark current task as "✅ Completed"
+      - Add completion timestamp
+      - Note any deviations from plan
+    - Use `TodoWrite` to:
+      - Mark current task as "completed"
+      - Set next task as "in_progress"
+    - Use `Write` to update progress log:
+      - Save to: `Logs/Implementation/progress-{feature}-{DD-MM}.md`
+      - Include: Tests written, code implemented, issues encountered
 
-## Enhanced Features
+### Phase 3: Task Transition
 
-### Automatic Context Detection
-- Project type recognition (React, Node.js, Python, etc.)
-- Existing codebase analysis
-- Technology stack identification
-- Wayne Tech standards compliance checking
+11. **Context Management**
+    - After each task completion:
+      - Save current context to `Logs/Implementation/context-task-{N}.md`
+      - Include: Decisions made, patterns used, issues resolved
+    - Use `/clear` command to:
+      - Clear conversation context
+      - Maintain fresh perspective for next task
+    - Load next task from updated plan
 
-### Intelligent Orchestration
-- Complex features use Wave orchestration
-- Parallel execution for independent components
-- Dependency-aware task scheduling
-- Resource optimization
+12. **Next Task Setup**
+    - Read updated plan file
+    - Identify next pending task
+    - Load relevant context from previous tasks
+    - Return to Phase 2, Step 4
 
-### Advanced MCP Integration
-- Cached responses for similar implementations
-- Multi-server coordination for complex features
-- Fallback mechanisms for server failures
-- Performance optimization
+### Phase 4: Completion
 
-## Command Options
+13. **Final Validation**
+    - When all tasks complete:
+      - Use `Bash` to run full test suite
+      - Run integration tests
+      - Check code coverage
+      - Verify all plan objectives met
 
-- **--complexity**: Override complexity analysis (low|medium|high|ultra)
-- **--personas**: Manually specify personas to activate
-- **--mcp**: Specify MCP servers to use
-- **--parallel**: Enable parallel execution for sub-components
-- **--test-first**: Force TDD workflow
-- **--security**: Enhanced security validation mode
-- **--performance**: Performance-focused implementation
-- **--ui-only**: Focus on UI components only
-- **--api-only**: Focus on API implementation only
-- **--no-tests**: Skip test generation (requires explicit authorization)
+14. **Project Documentation**
+    - Use `mcp__zen__docgen` to:
+      - Generate API documentation
+      - Create usage examples
+    - Update README with:
+      - Setup instructions
+      - Usage guide
+      - Test commands
 
-## Implementation Examples
+15. **Final Report**
+    - Create completion report using `Write`:
+      - Save to: `Logs/Implementation/completion-{feature}-{DD-MM}.md`
+      - Include:
+        - All tasks completed
+        - Test coverage achieved
+        - Performance metrics
+        - Known issues/TODOs
+        - Deviation from original plan
 
-### Simple UI Component
-```bash
-claude /implement "Create a responsive navigation component"
-# Auto-activates: Frontend + QA personas, Magic MCP
-```
+## Arguments
+- $ARGUMENTS: Path to plan file (e.g., "Logs/Plans/plan-auth-08-10.md")
 
-### API Endpoint
-```bash
-claude /implement "Add user authentication endpoint with JWT"
-# Auto-activates: Backend + Security personas, Sequential MCP
-```
+## Expected Output
+1. GitHub repository created/updated
+2. Test files for each task (failing first)
+3. Implementation passing all tests
+4. Clean git history with TDD commits
+5. Updated plan file with progress
+6. Progress logs and context files
+7. Full test coverage report
+8. Completion documentation
 
-### Full-Stack Feature
-```bash
-claude /implement "Build complete user dashboard with analytics"
-# Auto-activates: Architect + Frontend + Backend + QA personas, all MCPs
-```
+## Error Handling
+- If tests won't pass after multiple attempts:
+  - Use `mcp__zen__debug` to identify root cause
+  - Document blocker in plan file
+  - Ask user for guidance
+- If context gets too large:
+  - Save critical information before `/clear`
+  - Reload only essential context for next task
 
-### Complex System
-```bash
-claude /implement "Design microservices architecture for payment processing" --complexity ultra
-# Auto-activates: Wave orchestration with multiple personas and MCPs
-```
-
-## Master Wayne's Implementation Standards
-
-*"A hero can be anyone, even someone doing something as simple as writing clean, maintainable code."*
-
-### Success Criteria
-- All code follows Wayne Tech standards
-- Comprehensive test coverage (>90%)
-- Security validation passed
-- Performance benchmarks met
-- Documentation complete
-- Accessibility compliance (WCAG-AA)
-
-### Quality Gates
-1. **Security Gate**: No vulnerabilities detected
-2. **Performance Gate**: Response times within limits
-3. **Quality Gate**: Code quality metrics passed
-4. **Test Gate**: All tests passing with adequate coverage
-5. **Documentation Gate**: All features documented
-
-**Output**: Complete feature implementation with tests, documentation, and Wayne Tech approval rating (saved to project directory with logs in ./logs/implement-{timestamp}.md).
-
-**Note**: The system automatically selects the optimal combination of personas and MCP servers based on feature analysis, ensuring efficient and high-quality implementation while maintaining Wayne Enterprise standards.
+## Notes
+- Strict TDD: Tests MUST fail before implementation
+- Each task gets two commits: tests, then implementation
+- Context cleared between tasks for performance
+- Plan file serves as single source of truth
+- All progress tracked and documented
+- Quality checks mandatory before task completion

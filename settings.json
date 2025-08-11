@@ -31,6 +31,10 @@
           {
             "type": "command",
             "command": "python ~/.claude/hooks/post_tool_use/auto_format.py"
+          },
+          {
+            "type": "command",
+            "command": "python ~/.claude/hooks/post_tool_use/linter_check.py"
           }
         ]
       },
@@ -72,5 +76,15 @@
     "CLAUDE_DANGEROUS_MODE": "true",
     "CLAUDE_AUTO_COMMIT": "false",
     "CLAUDE_PARALLEL_ENABLED": "true"
+  },
+
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "sk_fe82500e265e1ad11fc97b89be14618290c367fea5f377cd"
+      }
+    }
   }
 }

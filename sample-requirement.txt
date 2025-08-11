@@ -1,0 +1,11 @@
+Command Requirement: Code Quality Checker
+
+I need a command that:
+1. Finds all JavaScript and TypeScript files in the project
+2. Checks them for common code quality issues
+3. Looks for unused variables and functions
+4. Identifies overly complex functions
+5. Generates a summary report with suggestions
+
+The command should be quick to run and provide actionable feedback.
+Should work on the current project directory.

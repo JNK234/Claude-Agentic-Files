@@ -390,6 +390,181 @@ EOF
     log_info "Run 'source $shell_rc' or restart your terminal to activate"
 }
 
+# Setup git worktree functions
+setup_git_worktree_functions() {
+    log_info "Setting up git worktree helper functions..."
+    
+    # Detect shell
+    local shell_rc=""
+    local shell_name=""
+    
+    if [[ -n "${ZSH_VERSION:-}" ]] || [[ "$SHELL" == */zsh ]]; then
+        shell_rc="$HOME/.zshrc"
+        shell_name="zsh"
+    elif [[ -n "${BASH_VERSION:-}" ]] || [[ "$SHELL" == */bash ]]; then
+        shell_rc="$HOME/.bashrc"
+        shell_name="bash"
+    else
+        log_warn "Could not detect shell type - skipping git worktree setup"
+        return 0
+    fi
+    
+    if [[ ! -f "$shell_rc" ]]; then
+        log_warn "Shell RC file not found: $shell_rc - skipping git worktree setup"
+        return 0
+    fi
+    
+    # Check if worktree functions already configured
+    if grep -q "Git worktree helper function" "$shell_rc"; then
+        log_info "Git worktree functions already configured"
+        return 0
+    fi
+    
+    # Add git worktree functions
+    cat >> "$shell_rc" << 'EOF'
+
+# Git worktree helper function
+# Usage: wt <feature-name>
+wt() {
+    # Exit immediately on error
+    set -e
+    
+    # Get the current git project directory (must be inside a Git repo)
+    local project_dir=$(git rev-parse --show-toplevel)
+    
+    # Get the base name of the current project folder
+    local project_name=$(basename "$project_dir")
+    
+    # Get the desired feature/branch name from the first argument
+    local feature_name="$1"
+    
+    # Fail fast if no feature name was provided
+    if [ -z "$feature_name" ]; then
+        echo "❌ Usage: wt <feature-name>"
+        return 1
+    fi
+    
+    # Define the parent folder where all worktrees go, beside the main repo
+    local worktree_parent="$(dirname "$project_dir")/${project_name}-worktrees"
+    
+    # Define the full path of the new worktree folder
+    local worktree_path="${worktree_parent}/${feature_name}"
+    
+    # Create the parent worktrees folder if it doesn't exist
+    mkdir -p "$worktree_parent"
+    
+    # Create the worktree and the branch
+    git -C "$project_dir" worktree add -b "$feature_name" "$worktree_path"
+    
+    # List of files to copy if they exist
+    local files_to_copy=(
+        .env
+        .env.local
+        .env.development
+        .env.staging
+        .env.production
+        .nvmrc
+        .node-version
+        .claude
+        .cursor
+        .vscode/settings.json
+        .idea/workspace.xml
+        Claude.md
+        CLAUDE.md
+        claude.md
+        .gitignore
+        .eslintrc.json
+        .prettierrc
+        .prettierrc.json
+        tsconfig.json
+        package.json
+        package-lock.json
+        yarn.lock
+        pnpm-lock.yaml
+    )
+    
+    for file in "${files_to_copy[@]}"; do
+        if [ -f "$project_dir/$file" ]; then
+            # Create parent directory if it doesn't exist (for nested files)
+            local file_dir=$(dirname "$worktree_path/$file")
+            mkdir -p "$file_dir"
+            cp "$project_dir/$file" "$worktree_path/$file"
+            echo "📋 Copied $file into worktree."
+        fi
+    done
+    
+    # List of hidden folders to copy if they exist
+    local hidden_dirs=(.instrumental .agent_os .claude .cursor .vscode .idea)
+    
+    for dir in "${hidden_dirs[@]}"; do
+        if [ -d "$project_dir/$dir" ]; then
+            cp -R "$project_dir/$dir" "$worktree_path/$dir"
+            echo "📋 Copied $dir/ into worktree."
+        fi
+    done
+    
+    # Change directory into the new worktree
+    cd "$worktree_path"
+    
+    # Open the worktree in VS Code (new instance)
+    if command -v code >/dev/null 2>&1; then
+        code "$worktree_path"
+        echo "🚀 Opened worktree in VS Code."
+    else
+        echo "⚠️  VS Code not found. Install VS Code CLI or modify script for your preferred editor."
+    fi
+    
+    # Alternative editors (uncomment if you prefer a different one):
+    # if command -v cursor >/dev/null 2>&1; then
+    #     cursor "$worktree_path"
+    #     echo "🚀 Opened worktree in Cursor."
+    # fi
+    # if command -v subl >/dev/null 2>&1; then
+    #     subl "$worktree_path"
+    #     echo "🚀 Opened worktree in Sublime Text."
+    # fi
+    
+    # Confirm success
+    echo "✅ Worktree '$feature_name' created at $worktree_path and checked out."
+    echo "📁 Current directory: $(pwd)"
+}
+
+# Optional: Add a function to list all worktrees
+wt-list() {
+    git worktree list
+}
+
+# Optional: Add a function to remove a worktree
+wt-remove() {
+    local feature_name="$1"
+    
+    if [ -z "$feature_name" ]; then
+        echo "❌ Usage: wt-remove <feature-name>"
+        return 1
+    fi
+    
+    # Get current project info
+    local project_dir=$(git rev-parse --show-toplevel)
+    local project_name=$(basename "$project_dir")
+    local worktree_parent="$(dirname "$project_dir")/${project_name}-worktrees"
+    local worktree_path="${worktree_parent}/${feature_name}"
+    
+    # Remove the worktree
+    git worktree remove "$worktree_path"
+    echo "✅ Worktree '$feature_name' removed."
+}
+
+# Optional: Add a function to clean up merged branches
+wt-cleanup() {
+    echo "🧹 Cleaning up worktrees for merged branches..."
+    git worktree prune
+    echo "✅ Cleanup complete."
+}
+EOF
+    
+    log_success "Git worktree functions configured for $shell_name"
+}
+
 # Setup MCP servers (optional)
 setup_mcp_servers() {
     log_info "Setting up MCP servers..."
@@ -539,7 +714,8 @@ EOF
     
     echo -e "\n${BLUE}📚 QUICK START:${NC}"
     echo -e "• Plan & execute: ${YELLOW}claude /brainstorm → /plan → git worktree → /ship${NC}"
-    echo -e "• Parallel development: ${YELLOW}git worktree add ../project-feature -b feature/name${NC}"
+    echo -e "• Git worktrees: ${YELLOW}wt feature-name${NC} (creates branch & worktree)"
+    echo -e "• List worktrees: ${YELLOW}wt-list${NC} | Remove: ${YELLOW}wt-remove feature-name${NC}"
     echo -e "• Get help: ${YELLOW}claude /help${NC}"
     
     echo -e "\n${BLUE}🔧 ADDITIONAL SETUP:${NC}"
@@ -562,6 +738,15 @@ main() {
     install_core_components
     configure_claude_settings
     configure_shell_environment
+    
+    # Optional git worktree setup (with user choice)
+    echo -e "\n${YELLOW}Install git worktree helper functions? (y/N):${NC} "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        setup_git_worktree_functions
+    else
+        log_info "Skipping git worktree setup - you can add them manually later"
+    fi
     
     # Optional MCP setup (with user choice)
     if command -v claude &> /dev/null && command -v node &> /dev/null; then
