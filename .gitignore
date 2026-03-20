@@ -20,7 +20,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Claude Code specific
-.claude/settings.local.json
+.claude/
 logs/
 *.log
 
@@ -32,11 +32,25 @@ logs/
 # Environment variables
 .env
 .env.*
+!.env.example
+
+# Profiles with secrets
+profiles/*.json
+!profiles/*.example.json
+
+# Desktop config with secrets
+claude_desktop_config.json
+!claude_desktop_config.example.json
+
+# Settings variants with secrets
+settings-minimax.json
+settings-claude.json
 
 # Temporary files
 *.tmp
 *.bak
 *.backup
+*.backup_*
 
 # Test coverage
 coverage/
