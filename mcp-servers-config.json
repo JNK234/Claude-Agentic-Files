@@ -1,6 +1,6 @@
 {
-  "description": "MCP Server Configuration for Claude Agnetic System",
-  "version": "1.0.0",
+  "description": "MCP Server Configuration for Claude Agentic System",
+  "version": "2.0.0",
   "servers": [
     {
       "name": "sequential-thinking",
@@ -11,22 +11,14 @@
       "category": "reasoning"
     },
     {
-      "name": "puppeteer",
-      "description": "Web automation and browser control",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
-      "transport": "stdio",
-      "category": "automation"
-    },
-    {
       "name": "filesystem",
       "description": "File system operations and management",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/jnk789/Developer"],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "$HOME/Developer"],
       "transport": "stdio",
       "category": "system",
       "config": {
-        "allowed_directories": ["/Users/jnk789/Developer"]
+        "allowed_directories": ["$HOME/Developer"]
       }
     },
     {
@@ -40,19 +32,34 @@
     {
       "name": "zen",
       "description": "Advanced AI workflow tools and collaboration",
-      "command": "/Users/jnk789/Developer/MCPs/zen-mcp-server/.zen_venv/bin/python",
-      "args": ["/Users/jnk789/Developer/MCPs/zen-mcp-server/server.py"],
+      "command": "$HOME/Developer/MCPs/zen-mcp-server/zen-mcp-server",
+      "env": {
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}"
+      },
       "transport": "stdio",
-      "category": "ai-workflows",
-      "config": {
-        "working_directory": "/Users/jnk789/Developer/MCPs/zen-mcp-server"
-      }
+      "category": "ai-workflows"
+    },
+    {
+      "name": "gcloud-mcp",
+      "description": "Google Cloud CLI integration",
+      "command": "npx",
+      "args": ["-y", "@google-cloud/gcloud-mcp"],
+      "transport": "stdio",
+      "category": "cloud"
+    },
+    {
+      "name": "cloud-run-mcp",
+      "description": "Google Cloud Run deployment",
+      "command": "npx",
+      "args": ["-y", "@google-cloud/cloud-run-mcp"],
+      "transport": "stdio",
+      "category": "cloud"
     }
   ],
   "presets": {
     "minimal": ["filesystem", "context7"],
-    "development": ["filesystem", "context7", "puppeteer"],
-    "full": ["sequential-thinking", "puppeteer", "filesystem", "context7", "zen"],
-    "ai-enhanced": ["sequential-thinking", "context7", "zen"]
+    "development": ["filesystem", "context7", "sequential-thinking"],
+    "full": ["sequential-thinking", "filesystem", "context7", "zen", "gcloud-mcp", "cloud-run-mcp"],
+    "hpc": ["filesystem", "context7", "sequential-thinking"]
   }
 }
