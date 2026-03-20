@@ -17,6 +17,8 @@ HPC_MODE=false
 SKIP_SHELL_CONFIG=false
 SKIP_MCP=false
 SKIP_WORKTREE=false
+SKIP_HOOKS=false
+INSTALL_HOOKS=false
 
 # Colors
 RED='\033[0;31m'
@@ -51,6 +53,11 @@ parse_args() {
                 SKIP_SHELL_CONFIG=true
                 SKIP_MCP=true
                 SKIP_WORKTREE=true
+                SKIP_HOOKS=true
+                shift
+                ;;
+            --with-hooks)
+                INSTALL_HOOKS=true
                 shift
                 ;;
             --skip-mcp)
@@ -69,6 +76,7 @@ parse_args() {
                 echo "  --hpc              HPC/GPU cluster mode (non-interactive, skip GUI/MCP)"
                 echo "  --skip-mcp         Skip MCP server installation"
                 echo "  --skip-shell       Skip shell RC file modifications"
+                echo "  --with-hooks       Install hooks (skipped by default on HPC)"
                 echo "  -h, --help         Show this help message"
                 exit 0
                 ;;
@@ -101,11 +109,17 @@ detect_environment() {
     fi
 
     if [[ "$HPC_MODE" == true ]]; then
-        log_info "HPC mode enabled - skipping GUI, VS Code, and MCP setup"
+        log_info "HPC mode enabled - skipping GUI, VS Code, MCP, and hooks"
         INTERACTIVE=false
         SKIP_SHELL_CONFIG=true
         SKIP_MCP=true
         SKIP_WORKTREE=true
+        SKIP_HOOKS=true
+    fi
+
+    # --with-hooks overrides SKIP_HOOKS
+    if [[ "$INSTALL_HOOKS" == true ]]; then
+        SKIP_HOOKS=false
     fi
 }
 
@@ -309,8 +323,13 @@ install_core_components() {
     install_mcp_config
 }
 
-# Install hooks safely
+# Install hooks safely (opt-in on HPC)
 install_hooks() {
+    if [[ "$SKIP_HOOKS" == true ]]; then
+        log_info "Skipping hooks installation (use --with-hooks to enable)"
+        return 0
+    fi
+
     log_info "Installing hooks..."
 
     if [[ -d "$REPO_DIR/hooks" ]]; then
